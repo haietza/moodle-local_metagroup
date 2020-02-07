@@ -26,15 +26,24 @@ require_once("$CFG->libdir/formslib.php");
 class metagroup_form extends moodleform {
     //Add elements to form
     public function definition() {
-        global $CFG, $COURSE;
+        global $CFG, $DB, $COURSE;
         
         $mform = $this->_form;
         
         $mform->addElement('checkbox', 'enablemetagroup', get_string('enable', 'local_metagroup'));
+        $enabled = $DB->get_record('metagroup', array('courseid' => $COURSE->id));
+        if ($enabled) {
+            $mform->setDefault('enablemetagroup', 1);
+        }
         
         $mform->addElement('text', 'groupname', get_string('groupname', 'local_metagroup'));
         $mform->setType('groupname', PARAM_TEXT);
-        $groupname = $COURSE->shortname . ' course';
+        $metagroupid = $DB->get_field('metagroup', 'groupid', array('courseid' => $COURSE->id));
+        if ($metagroupid) {
+            $groupname = $DB->get_field('groups', 'name', array('id' => $metagroupid));
+        } else {
+            $groupname = $COURSE->shortname . ' course';
+        }
         $mform->setDefault('groupname', $groupname);
         
         $mform->addElement('hidden', 'courseid');

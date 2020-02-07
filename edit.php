@@ -22,6 +22,7 @@
 
 require_once('../../config.php');
 require_once($CFG->dirroot . '/local/metagroup/forms/edit_form.php');
+require_once ($CFG->dirroot.'/group/lib.php');
 
 $courseid   = required_param('courseid', PARAM_INT);
 $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
@@ -33,10 +34,11 @@ $PAGE->set_url($CFG->wwwroot . '/local/metagroup/edit.php', array('courseid' => 
 $PAGE->set_context(context_course::instance($course->id));
 $PAGE->set_pagelayout('admin');
 
-$return = new moodle_url('/course/admin.php', array('id' => $course->id));
-//$PAGE->navbar->add($loginsite);
-//$PAGE->set_title($site->fullname);
-//$PAGE->set_heading($site->fullname);
+$return = new moodle_url('/course/admin.php', array('courseid' => $course->id));
+
+if (!enrol_is_enabled('meta')) {
+    redirect($return);
+}
 
 //Instantiate simplehtml_form
 $mform = new metagroup_form();
@@ -49,15 +51,57 @@ if ($mform->is_cancelled()) {
     //In this case you process validated data. $mform->get_data() returns data posted in form.
     
     // SETTING ENABLED.
-    // Create parent group, if doesn't exist.
-    // Add current parent course enrolments to group.
-    // Listen for future enrolments.
+    if ($fromform->enablemetagroup) {
+        // Create parent group, if doesn't exist.
+        // Use name from form (default set).
+        $context = context_course::instance($course->id);
+        require_capability('moodle/course:managegroups', $context);
+        
+        // This function uses default group name.
+        // Check that something was entered?
+        $groupname = $fromform->groupname;
+        $metagroupid = $DB->get_record('metagroup', array('courseid' => $course->id), 'groupid');
+        if (!$metagroupid) {
+            // Create and store group.
+            $group = new stdClass();
+            $group->courseid = $course->id;
+            $group->name = $groupname;
+            $groupid = groups_create_group($group);
+            
+            $metagroup = new stdClass();
+            $metagroup->courseid = $course->id;
+            $metagroup->groupid = $groupid;
+            $DB->insert_record('metagroup', $metagroup);
+        }
+        
+        // Get enrollees of parent course.
+        // Enroll them in group.
+        $userids = array();
+        $plugins = enrol_get_instances($courseid, true);
+        foreach ($plugins as $plugin) {
+            if ($plugin->enrol != 'meta') {
+                $sql = get_enrolled_sql($context, '', 0, false, false, $plugin->id);
+                $userrecs = $DB->get_records_sql($sql[0], $sql[1]);
+                foreach ($userrecs as $userrec) {
+                    array_push($userids, $userrec->id);
+                }
+            }
+        }
+        
+        foreach ($userids as $userid) {
+            groups_add_member($groupid, $userid);
+        }
+        
+        // Listen for future enrolments.
+        
+        redirect($return);
+    } else {
+        // SETTING DISABLED.
+        // Delete parent group.
+        // Stop listening for enrolments.
+        // Delete row from metagroup DB.
+    }
     
-    // SETTING DISABLED.
-    // Delete parent group.
-    // Stop listening for enrolments.
-    
-    redirect($return);
 } else {
     // this branch is executed if the form is submitted but the data doesn't validate and the form should be redisplayed
     // or on the first display of the form.

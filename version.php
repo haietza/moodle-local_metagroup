@@ -22,7 +22,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2020020600;
+$plugin->version = 2020020700;
 $plugin->requires = 2019111801;
 $plugin->component = 'local_metagroup';
 $plugin->maturity = MATURITY_STABLE;
