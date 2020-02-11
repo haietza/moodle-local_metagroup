@@ -34,7 +34,7 @@ $PAGE->set_url($CFG->wwwroot . '/local/metagroup/edit.php', array('courseid' => 
 $PAGE->set_context(context_course::instance($course->id));
 $PAGE->set_pagelayout('admin');
 
-$return = new moodle_url('/course/admin.php', array('courseid' => $course->id));
+$return = new moodle_url('/local/metagroup/edit.php', array('courseid' => $course->id));
 
 if (!enrol_is_enabled('meta')) {
     redirect($return);
@@ -51,7 +51,7 @@ if ($mform->is_cancelled()) {
     //In this case you process validated data. $mform->get_data() returns data posted in form.
     
     // SETTING ENABLED.
-    if ($fromform->enablemetagroup) {
+    if (isset($fromform->enablemetagroup) && $fromform->enablemetagroup) {
         // Create parent group, if doesn't exist.
         // Use name from form (default set).
         $context = context_course::instance($course->id);
@@ -61,6 +61,8 @@ if ($mform->is_cancelled()) {
         // Check that something was entered?
         $groupname = $fromform->groupname;
         $metagroupid = $DB->get_record('metagroup', array('courseid' => $course->id), 'groupid');
+        
+        // No metagroup exists yet.
         if (!$metagroupid) {
             // Create and store group.
             $group = new stdClass();
@@ -72,6 +74,12 @@ if ($mform->is_cancelled()) {
             $metagroup->courseid = $course->id;
             $metagroup->groupid = $groupid;
             $DB->insert_record('metagroup', $metagroup);
+        } else {
+            // Metagroup exists, may need to change name.
+            $groupid = $metagroupid->groupid;
+            $group = groups_get_group($groupid);
+            $group->name = $fromform->groupname;
+            groups_update_group($group);
         }
         
         // Get enrollees of parent course.
@@ -94,14 +102,19 @@ if ($mform->is_cancelled()) {
         
         // Listen for future enrolments.
         
-        redirect($return);
+        redirect($return, get_string('success', 'moodle'), null, \core\output\notification::NOTIFY_SUCCESS);
     } else {
         // SETTING DISABLED.
         // Delete parent group.
         // Stop listening for enrolments.
         // Delete row from metagroup DB.
+        $metagroup = $DB->get_record('metagroup', array('courseid' => $course->id));
+        if ($metagroup) {
+            groups_delete_group($metagroup->groupid);
+            $DB->delete_records('metagroup', array('id' => $metagroup->id));
+        }
+        redirect($return, get_string('success', 'moodle'), null, \core\output\notification::NOTIFY_SUCCESS);
     }
-    
 } else {
     // this branch is executed if the form is submitted but the data doesn't validate and the form should be redisplayed
     // or on the first display of the form.
