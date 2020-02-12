@@ -21,9 +21,14 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
+//require_once($CFG->dirroot . '/local/metagrup/lib.php');
 
-$plugin->version = 2020021200;
-$plugin->requires = 2019111801;
-$plugin->component = 'local_metagroup';
-$plugin->maturity = MATURITY_STABLE;
-$plugin->release = 'v3.8-r1';
+class local_metagroup_observer {
+    public static function manage_events($event) {
+        global $DB;
+        switch ($event->eventname) {
+            case '\core\event\group_deleted':
+                $DB->delete_records('metagroup', array('groupid' => $event->objectid));
+        }
+    }
+}

@@ -20,10 +20,11 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+$callback = 'local_metagroup_observer::manage_events';
 
-$plugin->version = 2020021200;
-$plugin->requires = 2019111801;
-$plugin->component = 'local_metagroup';
-$plugin->maturity = MATURITY_STABLE;
-$plugin->release = 'v3.8-r1';
+$observers = array (
+    array (
+        'eventname' => '\core\event\group_deleted',
+        'callback' => $callback,
+    )
+);

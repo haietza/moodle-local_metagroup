@@ -21,7 +21,7 @@
  */
 
 require_once('../../config.php');
-require_once($CFG->dirroot . '/local/metagroup/forms/edit_form.php');
+require_once($CFG->dirroot . '/local/metagroup/classes/forms/edit_form.php');
 require_once ($CFG->dirroot.'/group/lib.php');
 
 $courseid   = required_param('courseid', PARAM_INT);
