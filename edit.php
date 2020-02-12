@@ -26,9 +26,10 @@ require_once ($CFG->dirroot.'/group/lib.php');
 
 $courseid   = required_param('courseid', PARAM_INT);
 $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
+$context = context_course::instance($course->id);
 
 require_login($course);
-//require_capability();
+require_capability('moodle/course:managegroups', $context);
 
 $PAGE->set_url($CFG->wwwroot . '/local/metagroup/edit.php', array('courseid' => $course->id));
 $PAGE->set_context(context_course::instance($course->id));
@@ -54,8 +55,8 @@ if ($mform->is_cancelled()) {
     if (isset($fromform->enablemetagroup) && $fromform->enablemetagroup) {
         // Create parent group, if doesn't exist.
         // Use name from form (default set).
-        $context = context_course::instance($course->id);
-        require_capability('moodle/course:managegroups', $context);
+        //$context = context_course::instance($course->id);
+        //require_capability('moodle/course:managegroups', $context);
         
         // This function uses default group name.
         // Check that something was entered?
@@ -78,8 +79,10 @@ if ($mform->is_cancelled()) {
             // Metagroup exists, may need to change name.
             $groupid = $metagroupid->groupid;
             $group = groups_get_group($groupid);
-            $group->name = $fromform->groupname;
-            groups_update_group($group);
+            if ($group->name != $fromform->groupname) {
+                $group->name = $fromform->groupname;
+                groups_update_group($group);
+            }
         }
         
         // Get enrollees of parent course.

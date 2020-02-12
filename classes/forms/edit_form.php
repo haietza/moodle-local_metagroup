@@ -52,8 +52,22 @@ class metagroup_form extends moodleform {
         
         $this->add_action_buttons(false, 'Submit');
     }
+    
     //Custom validation should be added here
     function validation($data, $files) {
-        return array();
+        global $COURSE;
+        
+        $errors = array();
+        
+        if (isset($data['enablemetagroup']) && $data['enablemetagroup']) {
+            $groups = groups_get_all_groups($COURSE->id);
+            foreach ($groups as $group) {
+                if ($group->name == $data['groupname']) {
+                    $errors['groupname'] = get_string('groupnameexists', 'group', $data['groupname']);
+                    break;
+                }
+            }
+        }
+        return $errors;
     }
 }

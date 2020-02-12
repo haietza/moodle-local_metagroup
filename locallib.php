@@ -20,17 +20,27 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-require_once($CFG->dirroot . '/local/metagroup/locallib.php');
-
-class local_metagroup_observer {
-    public static function manage_events($event) {
-        global $DB;
-        switch ($event->eventname) {
-            case '\core\event\group_deleted':
-                $DB->delete_records('metagroup', array('groupid' => $event->objectid));
-            case '\core\event\user_enrolment_created':
-                process_course_enrol($event);
-        }
+function process_course_enrol($event) {
+    global $DB;
+    
+    $metagroup = $DB->get_record('metagroup', array('courseid' => $event->courseid));
+    if (!$metagroup) {
+        // Setting is disabled.
+        return;
     }
+    
+    $enrol = $event->other['enrol'];
+    if ($enrol == 'meta') {
+        // Meta enrolment, group membership already handled.
+        return;
+    }
+    
+    $course = $DB->get_record('course', array('id' => $event->courseid), '*', MUST_EXIST);
+    $group = groups_get_group($metagroup->groupid);
+    
+    if (groups_is_member($metagroup->groupid, $event->relateduserid)) {
+        return;
+    }
+    
+    groups_add_member($metagroup->groupid, $event->relateduserid);
 }

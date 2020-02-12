@@ -29,50 +29,30 @@ function local_metagroup_extend_settings_navigation($settingsnav, $context) {
     }
     
     // Only let users with the appropriate capability see this settings item.
-    if (!has_capability('moodle/backup:backupcourse', context_course::instance($PAGE->course->id))) {
+    if (!has_capability('moodle/course:managegroups', context_course::instance($PAGE->course->id))) {
         return;
     }
     
-    if ($courseadminnode = $settingsnav->get('courseadmin')->get('users')) {
+    $courseadmin_node = $settingsnav->get('courseadmin');
+    if ($useradmin_node = $courseadmin_node->get('users')) {
         $linkname = get_string('pluginname', 'local_metagroup');
         $url = new moodle_url('/local/metagroup/edit.php', array('courseid' => $PAGE->course->id));
-        $linknode = navigation_node::create(
+        /**$linknode = navigation_node::create(
                 $linkname,
                 $url,
-                navigation_node::NODETYPE_LEAF,
+                navigation_node::TYPE_SETTING,
+                'metagroup',
+                null,
+                new pix_icon('i/import', $linkname)
+                );*/
+        
+        //$useradmin_node->add($linknode);
+        $useradmin_node->add(
+                $linkname,
+                $url,
+                navigation_node::TYPE_SETTING,
                 'metagroup',
                 'metagroup',
-                new pix_icon('t/refresh', $linkname)
-                );
-        if ($PAGE->url->compare($url, URL_MATCH_BASE)) {
-            $linknode->make_active();
-        }
-        $courseadminnode->add_node($linknode);
+                new pix_icon('i/reload', $linkname));
     }
-}
-
-function process_course_enrol($event) {
-    global $DB;
-    
-    $metagroup = $DB->get_record('metagroup', array('courseid' => $event->courseid));
-    if (!$metagroup) {
-        // Setting is disabled.
-        return;
-    }
-    
-    $enrol = $event->other['enrol'];
-    if ($enrol == 'meta') {
-        // Meta enrolment, group membership already handled.
-        return;
-    }
-
-    $course = $DB->get_record('course', array('id' => $event->courseid), '*', MUST_EXIST);
-    $group = groups_get_group($metagroup->groupid);
-    
-    if (groups_is_member($metagroup->groupid, $event->relateduserid)) {
-        return;
-    }
-    
-    groups_add_member($metagroup->groupid, $event->relateduserid);
-    
 }
