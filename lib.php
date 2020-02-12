@@ -37,16 +37,7 @@ function local_metagroup_extend_settings_navigation($settingsnav, $context) {
     if ($useradmin_node = $courseadmin_node->get('users')) {
         $linkname = get_string('pluginname', 'local_metagroup');
         $url = new moodle_url('/local/metagroup/edit.php', array('courseid' => $PAGE->course->id));
-        /**$linknode = navigation_node::create(
-                $linkname,
-                $url,
-                navigation_node::TYPE_SETTING,
-                'metagroup',
-                null,
-                new pix_icon('i/import', $linkname)
-                );*/
         
-        //$useradmin_node->add($linknode);
         $useradmin_node->add(
                 $linkname,
                 $url,

@@ -41,31 +41,19 @@ if (!enrol_is_enabled('meta')) {
     redirect($return);
 }
 
-//Instantiate simplehtml_form
 $mform = new metagroup_form();
 
-//Form processing and displaying is done here
 if ($mform->is_cancelled()) {
-    //Handle form cancel operation, if cancel button is present on form
     redirect($return);
 } else if ($fromform = $mform->get_data()) {
-    //In this case you process validated data. $mform->get_data() returns data posted in form.
-    
-    // SETTING ENABLED.
+    // In this case you process validated data. $mform->get_data() returns data posted in form.
     if (isset($fromform->enablemetagroup) && $fromform->enablemetagroup) {
-        // Create parent group, if doesn't exist.
-        // Use name from form (default set).
-        //$context = context_course::instance($course->id);
-        //require_capability('moodle/course:managegroups', $context);
-        
-        // This function uses default group name.
-        // Check that something was entered?
+        // Setting is enabled.
         $groupname = $fromform->groupname;
         $metagroupid = $DB->get_record('metagroup', array('courseid' => $course->id), 'groupid');
         
-        // No metagroup exists yet.
         if (!$metagroupid) {
-            // Create and store group.
+            // No metagroup exists yet. Create and store metagroup.
             $group = new stdClass();
             $group->courseid = $course->id;
             $group->name = $groupname;
@@ -85,8 +73,7 @@ if ($mform->is_cancelled()) {
             }
         }
         
-        // Get enrollees of parent course.
-        // Enroll them in group.
+        // Get enrollees of metacourse. Enroll them in metagroup.
         $userids = array();
         $plugins = enrol_get_instances($courseid, true);
         foreach ($plugins as $plugin) {
@@ -103,14 +90,9 @@ if ($mform->is_cancelled()) {
             groups_add_member($groupid, $userid);
         }
         
-        // Listen for future enrolments.
-        
         redirect($return, get_string('success', 'moodle'), null, \core\output\notification::NOTIFY_SUCCESS);
     } else {
-        // SETTING DISABLED.
-        // Delete parent group.
-        // Stop listening for enrolments.
-        // Delete row from metagroup DB.
+        // Setting is disabled.
         $metagroup = $DB->get_record('metagroup', array('courseid' => $course->id));
         if ($metagroup) {
             groups_delete_group($metagroup->groupid);
@@ -119,12 +101,8 @@ if ($mform->is_cancelled()) {
         redirect($return, get_string('success', 'moodle'), null, \core\output\notification::NOTIFY_SUCCESS);
     }
 } else {
-    // this branch is executed if the form is submitted but the data doesn't validate and the form should be redisplayed
+    // This branch is executed if the form is submitted but the data doesn't validate and the form should be redisplayed
     // or on the first display of the form.
-    
-    //Set default data (if any)
-    //$mform->set_data($toform);
-    //displays the form
     $PAGE->set_heading($course->fullname);
     $PAGE->set_title(get_string('pluginname', 'local_metagroup'));
     

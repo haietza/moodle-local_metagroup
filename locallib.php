@@ -39,6 +39,7 @@ function process_course_enrol($event) {
     $group = groups_get_group($metagroup->groupid);
     
     if (groups_is_member($metagroup->groupid, $event->relateduserid)) {
+        // User is alreaady a member of the metagroup.
         return;
     }
     
