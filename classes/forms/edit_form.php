@@ -35,6 +35,7 @@ class metagroup_form extends moodleform {
         if ($enabled) {
             $mform->setDefault('enablemetagroup', 1);
         }
+        $mform->addHelpButton('enablemetagroup', 'enable', 'local_metagroup');
         
         $mform->addElement('text', 'groupname', get_string('groupname', 'local_metagroup'));
         $mform->setType('groupname', PARAM_TEXT);
@@ -46,12 +47,13 @@ class metagroup_form extends moodleform {
             $groupname = $COURSE->shortname . ' course';
         }
         $mform->setDefault('groupname', $groupname);
+        $mform->addHelpButton('groupname', 'groupname', 'local_metagroup');
         
         $mform->addElement('hidden', 'courseid');
         $mform->setType('courseid', PARAM_INT);
         $mform->setDefault('courseid', $COURSE->id);
         
-        $this->add_action_buttons(false, 'Submit');
+        $this->add_action_buttons(false, get_string('savechanges'));
     }
     
     function validation($data, $files) {
