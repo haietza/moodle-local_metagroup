@@ -24,7 +24,7 @@ defined('MOODLE_INTERNAL') || die;
 require_once("$CFG->libdir/formslib.php");
 
 class metagroup_form extends moodleform {
-    //Add elements to form
+
     public function definition() {
         global $CFG, $DB, $COURSE;
         
@@ -38,6 +38,7 @@ class metagroup_form extends moodleform {
         
         $mform->addElement('text', 'groupname', get_string('groupname', 'local_metagroup'));
         $mform->setType('groupname', PARAM_TEXT);
+        $mform->addRule('groupname', get_string('required'), 'required');
         $metagroupid = $DB->get_field('metagroup', 'groupid', array('courseid' => $COURSE->id));
         if ($metagroupid) {
             $groupname = $DB->get_field('groups', 'name', array('id' => $metagroupid));
@@ -53,7 +54,6 @@ class metagroup_form extends moodleform {
         $this->add_action_buttons(false, 'Submit');
     }
     
-    //Custom validation should be added here
     function validation($data, $files) {
         global $COURSE;
         
