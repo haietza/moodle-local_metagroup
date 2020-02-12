@@ -21,7 +21,7 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-//require_once($CFG->dirroot . '/local/metagrup/lib.php');
+require_once($CFG->dirroot . '/local/metagroup/lib.php');
 
 class local_metagroup_observer {
     public static function manage_events($event) {
@@ -29,6 +29,8 @@ class local_metagroup_observer {
         switch ($event->eventname) {
             case '\core\event\group_deleted':
                 $DB->delete_records('metagroup', array('groupid' => $event->objectid));
+            case '\core\event\user_enrolment_created':
+                process_course_enrol($event);
         }
     }
 }

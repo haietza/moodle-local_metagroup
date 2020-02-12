@@ -50,3 +50,29 @@ function local_metagroup_extend_settings_navigation($settingsnav, $context) {
         $courseadminnode->add_node($linknode);
     }
 }
+
+function process_course_enrol($event) {
+    global $DB;
+    
+    $metagroup = $DB->get_record('metagroup', array('courseid' => $event->courseid));
+    if (!$metagroup) {
+        // Setting is disabled.
+        return;
+    }
+    
+    $enrol = $event->other['enrol'];
+    if ($enrol == 'meta') {
+        // Meta enrolment, group membership already handled.
+        return;
+    }
+
+    $course = $DB->get_record('course', array('id' => $event->courseid), '*', MUST_EXIST);
+    $group = groups_get_group($metagroup->groupid);
+    
+    if (groups_is_member($metagroup->groupid, $event->relateduserid)) {
+        return;
+    }
+    
+    groups_add_member($metagroup->groupid, $event->relateduserid);
+    
+}

@@ -26,5 +26,9 @@ $observers = array (
     array (
         'eventname' => '\core\event\group_deleted',
         'callback' => $callback,
+    ),
+    array (
+            'eventname' => '\core\event\user_enrolment_created',
+            'callback' => $callback,
     )
 );
