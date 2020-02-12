@@ -20,25 +20,27 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 function local_metagroup_extend_settings_navigation($settingsnav, $context) {
     global $CFG, $PAGE;
-    
+
     // Only add this settings item on non-site course pages.
     if (!$PAGE->course or $PAGE->course->id == 1) {
         return;
     }
-    
+
     // Only let users with the appropriate capability see this settings item.
     if (!has_capability('moodle/course:managegroups', context_course::instance($PAGE->course->id))) {
         return;
     }
-    
-    $courseadmin_node = $settingsnav->get('courseadmin');
-    if ($useradmin_node = $courseadmin_node->get('users')) {
+
+    $courseadminnode = $settingsnav->get('courseadmin');
+    if ($useradminnode = $courseadminnode->get('users')) {
         $linkname = get_string('pluginname', 'local_metagroup');
         $url = new moodle_url('/local/metagroup/edit.php', array('courseid' => $PAGE->course->id));
-        
-        $useradmin_node->add(
+
+        $useradminnode->add(
                 $linkname,
                 $url,
                 navigation_node::TYPE_SETTING,

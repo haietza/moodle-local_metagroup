@@ -22,7 +22,7 @@
 
 require_once('../../config.php');
 require_once($CFG->dirroot . '/local/metagroup/classes/forms/edit_form.php');
-require_once ($CFG->dirroot.'/group/lib.php');
+require_once($CFG->dirroot.'/group/lib.php');
 
 $courseid   = required_param('courseid', PARAM_INT);
 $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
@@ -51,14 +51,14 @@ if ($mform->is_cancelled()) {
         // Setting is enabled.
         $groupname = $fromform->groupname;
         $metagroupid = $DB->get_record('metagroup', array('courseid' => $course->id), 'groupid');
-        
+
         if (!$metagroupid) {
             // No metagroup exists yet. Create and store metagroup.
             $group = new stdClass();
             $group->courseid = $course->id;
             $group->name = $groupname;
             $groupid = groups_create_group($group);
-            
+
             $metagroup = new stdClass();
             $metagroup->courseid = $course->id;
             $metagroup->groupid = $groupid;
@@ -72,7 +72,7 @@ if ($mform->is_cancelled()) {
                 groups_update_group($group);
             }
         }
-        
+
         // Get enrollees of metacourse. Enroll them in metagroup.
         $userids = array();
         $plugins = enrol_get_instances($courseid, true);
@@ -85,11 +85,11 @@ if ($mform->is_cancelled()) {
                 }
             }
         }
-        
+
         foreach ($userids as $userid) {
             groups_add_member($groupid, $userid);
         }
-        
+
         redirect($return, get_string('success', 'moodle'), null, \core\output\notification::NOTIFY_SUCCESS);
     } else {
         // Setting is disabled.
@@ -105,7 +105,7 @@ if ($mform->is_cancelled()) {
     // or on the first display of the form.
     $PAGE->set_heading($course->fullname);
     $PAGE->set_title(get_string('pluginname', 'local_metagroup'));
-    
+
     echo $OUTPUT->header();
     echo $OUTPUT->heading(get_string('pluginname', 'local_metagroup'));
     $mform->display();

@@ -24,7 +24,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/local/metagroup/locallib.php');
 
 class local_metagroup_observer {
-    
+
     public static function manage_events($event) {
         global $DB;
         switch ($event->eventname) {
