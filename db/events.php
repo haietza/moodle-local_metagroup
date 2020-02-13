@@ -32,7 +32,7 @@ $observers = array (
         'callback' => $callback,
     ),
     array (
-            'eventname' => '\core\event\user_enrolment_created',
-            'callback' => $callback,
+        'eventname' => '\core\event\user_enrolment_created',
+        'callback' => $callback,
     )
 );

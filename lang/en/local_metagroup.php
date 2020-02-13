@@ -27,3 +27,4 @@ $string['enable'] = 'Enable';
 $string['enable_help'] = 'Enable to keep metacourse enrolments synced into metagroup.';
 $string['groupname'] = 'Preferred metagroup name';
 $string['groupname_help'] = 'Enter the preferred name for the metagroup. Default is "[course shortname] course".';
+$string['meta_error'] = 'The Course meta link enrolment method is not enabled.';

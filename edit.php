@@ -40,7 +40,7 @@ $PAGE->set_pagelayout('admin');
 $return = new moodle_url('/local/metagroup/edit.php', array('courseid' => $course->id));
 
 if (!enrol_is_enabled('meta')) {
-    redirect($return);
+    redirect(new moodle_url('/course/view.php', array('id' => $course->id)), get_string('meta_error', 'local_metagroup'), null, \core\output\notification::NOTIFY_ERROR);
 }
 
 $mform = new metagroup_form();
