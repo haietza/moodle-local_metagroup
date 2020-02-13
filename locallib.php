@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Local functions for plugin.
+ *
  * @package   local_metagroup
  * @copyright 2020, Michelle Melton <meltonml@appstate.edu>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -22,6 +24,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Handler for course enrol event.
+ *
+ * @param unknown $event
+ */
 function process_course_enrol($event) {
     global $DB;
 

@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Core functions.
+ *
  * @package   local_metagroup
  * @copyright 2020, Michelle Melton <meltonml@appstate.edu>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -22,6 +24,12 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Add link to course-user admin menu.
+ *
+ * @param unknown $settingsnav
+ * @param unknown $context
+ */
 function local_metagroup_extend_settings_navigation($settingsnav, $context) {
     global $CFG, $PAGE;
 

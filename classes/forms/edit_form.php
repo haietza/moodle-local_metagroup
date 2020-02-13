@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Edit settings form.
+ *
  * @package   local_metagroup
  * @copyright 2020, Michelle Melton <meltonml@appstate.edu>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -23,8 +25,20 @@
 defined('MOODLE_INTERNAL') || die;
 require_once("$CFG->libdir/formslib.php");
 
+/**
+ * Edit settings form.
+ *
+ * @package   local_metagroup
+ * @copyright 2020, Michelle Melton <meltonml@appstate.edu>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class metagroup_form extends moodleform {
 
+    /**
+     * Define update settings form.
+     * {@inheritDoc}
+     * @see moodleform::definition()
+     */
     public function definition() {
         global $CFG, $DB, $COURSE;
 
@@ -56,6 +70,16 @@ class metagroup_form extends moodleform {
         $this->add_action_buttons(false, get_string('savechanges'));
     }
 
+    /**
+     * Validate update settings form submissions.
+     * {@inheritDoc}
+     * @see moodleform::validation()
+     *
+     * @param array $data Array of ("fieldname"=>value) of submitted data.
+     * @param array $files Array of uploaded files "element_name"=>tmp_file_path.
+     * @return array Array of "element_name"=>"error_description" if there are errors,
+     *         or an empty array if everything is OK (true allowed for backwards compatibility too).
+     */
     public function validation($data, $files) {
         global $COURSE;
 

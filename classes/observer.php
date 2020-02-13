@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Event observer.
+ *
  * @package   local_metagroup
  * @copyright 2020, Michelle Melton <meltonml@appstate.edu>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -23,8 +25,20 @@
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/local/metagroup/locallib.php');
 
+/**
+ * Event observer.
+ *
+ * @package   local_metagroup
+ * @copyright 2020, Michelle Melton <meltonml@appstate.edu>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class local_metagroup_observer {
 
+    /**
+     * Handlers for observed events.
+     *
+     * @param unknown $event
+     */
     public static function manage_events($event) {
         global $DB;
         switch ($event->eventname) {
