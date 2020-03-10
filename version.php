@@ -25,7 +25,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->version = 2020021201;
-$plugin->requires = 2019111801;
+//$plugin->requires = 2019111801;
+$plugin->requires = 2018120307;
 $plugin->component = 'local_metagroup';
 $plugin->maturity = MATURITY_STABLE;
 $plugin->release = 'v3.8-r1';
