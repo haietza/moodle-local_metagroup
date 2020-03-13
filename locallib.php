@@ -23,6 +23,7 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
+require_once($CFG->dirroot.'/group/lib.php');
 
 /**
  * Handler for course enrol event.
@@ -53,4 +54,58 @@ function process_course_enrol($event) {
     }
 
     groups_add_member($metagroup->groupid, $event->relateduserid);
+}
+
+function create_metagroup($courseid, $groupname, $context) {
+    global $DB;
+    
+    $group = new stdClass();
+    $group->courseid = $courseid;
+    $group->name = $groupname;
+    $groupid = groups_create_group($group);
+    
+    $metagroup = new stdClass();
+    $metagroup->courseid = $courseid;
+    $metagroup->groupid = $groupid;
+    $DB->insert_record('metagroup', $metagroup);
+    
+    // Get enrollees of metacourse. Enroll them in metagroup.
+    $userids = array();
+    $plugins = enrol_get_instances($courseid, true);
+    foreach ($plugins as $plugin) {
+        if ($plugin->enrol != 'meta') {
+            $sql = get_enrolled_sql($context, '', 0, false, false, $plugin->id);
+            $userrecs = $DB->get_records_sql($sql[0], $sql[1]);
+            foreach ($userrecs as $userrec) {
+                array_push($userids, $userrec->id);
+            }
+        }
+    }
+    
+    foreach ($userids as $userid) {
+        groups_add_member($groupid, $userid);
+    }
+    
+    return;
+}
+
+function edit_metagroup($metagroupid, $groupname) {
+    $groupid = $metagroupid->groupid;
+    $group = groups_get_group($groupid);
+    if ($group->name != $groupname) {
+        $group->name = $groupname;
+        groups_update_group($group);
+    }
+    return;
+}
+
+function delete_metagroup($courseid) {
+    global $DB;
+    
+    $metagroup = $DB->get_record('metagroup', array('courseid' => $courseid));
+    if ($metagroup) {
+        groups_delete_group($metagroup->groupid);
+        $DB->delete_records('metagroup', array('id' => $metagroup->id));
+    }
+    return;
 }

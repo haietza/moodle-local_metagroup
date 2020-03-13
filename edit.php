@@ -24,6 +24,7 @@
 
 require_once('../../config.php');
 require_once($CFG->dirroot . '/local/metagroup/classes/forms/edit_form.php');
+require_once($CFG->dirroot . '/local/metagroup/locallib.php');
 require_once($CFG->dirroot.'/group/lib.php');
 
 $courseid   = required_param('courseid', PARAM_INT);
@@ -56,52 +57,16 @@ if ($mform->is_cancelled()) {
 
         if (!$metagroupid) {
             // No metagroup exists yet. Create and store metagroup.
-            $group = new stdClass();
-            $group->courseid = $course->id;
-            $group->name = $groupname;
-            $groupid = groups_create_group($group);
-
-            $metagroup = new stdClass();
-            $metagroup->courseid = $course->id;
-            $metagroup->groupid = $groupid;
-            $DB->insert_record('metagroup', $metagroup);
+            create_metagroup($course->id, $groupname, $context);
         } else {
             // Metagroup exists, may need to change name.
-            $groupid = $metagroupid->groupid;
-            $group = groups_get_group($groupid);
-            if ($group->name != $fromform->groupname) {
-                $group->name = $fromform->groupname;
-                groups_update_group($group);
-            }
+            edit_metagroup($metagroupid, $groupname);
         }
-
-        // Get enrollees of metacourse. Enroll them in metagroup.
-        $userids = array();
-        $plugins = enrol_get_instances($courseid, true);
-        foreach ($plugins as $plugin) {
-            if ($plugin->enrol != 'meta') {
-                $sql = get_enrolled_sql($context, '', 0, false, false, $plugin->id);
-                $userrecs = $DB->get_records_sql($sql[0], $sql[1]);
-                foreach ($userrecs as $userrec) {
-                    array_push($userids, $userrec->id);
-                }
-            }
-        }
-
-        foreach ($userids as $userid) {
-            groups_add_member($groupid, $userid);
-        }
-
-        redirect($return, get_string('success', 'moodle'), null, \core\output\notification::NOTIFY_SUCCESS);
     } else {
         // Setting is disabled.
-        $metagroup = $DB->get_record('metagroup', array('courseid' => $course->id));
-        if ($metagroup) {
-            groups_delete_group($metagroup->groupid);
-            $DB->delete_records('metagroup', array('id' => $metagroup->id));
-        }
-        redirect($return, get_string('success', 'moodle'), null, \core\output\notification::NOTIFY_SUCCESS);
+        delete_metagroup($course->id);
     }
+    redirect($return, get_string('success', 'moodle'), null, \core\output\notification::NOTIFY_SUCCESS);
 } else {
     // This branch is executed if the form is submitted but the data doesn't validate and the form should be redisplayed
     // or on the first display of the form.
