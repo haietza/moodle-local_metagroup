@@ -70,4 +70,36 @@ class local_metagroup_locallib_testcase extends advanced_testcase {
         
         $this->assertTrue($groupexists);
     }
+    
+    /**
+     * Test metagroup name changed.
+     */
+    public function test_metagroup_edit_metagroup() {
+        global $DB;
+        $this->resetAfterTest();
+        
+        $course = $this->getDataGenerator()->create_course();
+        $courseid = $course->id;
+        $context = context_course::instance($course->id);
+        $groupname = 'Metagroup name';
+        
+        // Create group.
+        $group = new stdClass();
+        $group->courseid = $courseid;
+        $group->name = $groupname;
+        $groupid = groups_create_group($group);
+        
+        // Create metagroup.
+        $metagroup = new stdClass();
+        $metagroup->courseid = $courseid;
+        $metagroup->groupid = $groupid;
+        $DB->insert_record('metagroup', $metagroup);
+        
+        $newgroupname = 'New metagroup name';
+        edit_metagroup($groupid, $newgroupname);
+        
+        $groupexists = $DB->record_exists('groups', array('courseid' => $courseid, 'name' => $newgroupname));
+        
+        $this->assertTrue($groupexists);
+    }
 }

@@ -60,7 +60,7 @@ if ($mform->is_cancelled()) {
             create_metagroup($course->id, $groupname, $context);
         } else {
             // Metagroup exists, may need to change name.
-            edit_metagroup($metagroupid, $groupname);
+            edit_metagroup($metagroupid->groupid, $groupname);
         }
     } else {
         // Setting is disabled.

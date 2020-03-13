@@ -89,8 +89,7 @@ function create_metagroup($courseid, $groupname, $context) {
     return;
 }
 
-function edit_metagroup($metagroupid, $groupname) {
-    $groupid = $metagroupid->groupid;
+function edit_metagroup($groupid, $groupname) {
     $group = groups_get_group($groupid);
     if ($group->name != $groupname) {
         $group->name = $groupname;
