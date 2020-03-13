@@ -35,7 +35,7 @@ class local_metagroup_locallib_testcase extends advanced_testcase {
     /**
      * Test metagroup DB record added.
      */
-    public function test_metagroup_create_metagroup_metagroup() {
+    public function test_metagroup_create_metagroup() {
         global $DB;
         $this->resetAfterTest();
         
@@ -54,7 +54,7 @@ class local_metagroup_locallib_testcase extends advanced_testcase {
     /**
      * Test metagroup created.
      */
-    public function test_metagroup_create_metagroup_group() {
+    public function test_metagroup_create_group() {
         global $DB;
         $this->resetAfterTest();
         
@@ -67,14 +67,13 @@ class local_metagroup_locallib_testcase extends advanced_testcase {
         
         $groupexists = $DB->record_exists('groups', array('courseid' => $courseid, 'name' => $groupname));
         
-        
         $this->assertTrue($groupexists);
     }
     
     /**
      * Test metagroup name changed.
      */
-    public function test_metagroup_edit_metagroup() {
+    public function test_metagroup_edit() {
         global $DB;
         $this->resetAfterTest();
         
@@ -83,13 +82,11 @@ class local_metagroup_locallib_testcase extends advanced_testcase {
         $context = context_course::instance($course->id);
         $groupname = 'Metagroup name';
         
-        // Create group.
         $group = new stdClass();
         $group->courseid = $courseid;
         $group->name = $groupname;
         $groupid = groups_create_group($group);
         
-        // Create metagroup.
         $metagroup = new stdClass();
         $metagroup->courseid = $courseid;
         $metagroup->groupid = $groupid;
@@ -101,5 +98,31 @@ class local_metagroup_locallib_testcase extends advanced_testcase {
         $groupexists = $DB->record_exists('groups', array('courseid' => $courseid, 'name' => $newgroupname));
         
         $this->assertTrue($groupexists);
+    }
+    
+    /**
+     * Test metagroup created, meta enrolments not added.
+     */
+    public function test_metagroup_create_meta_enrolments() {
+        global $DB;
+        $this->resetAfterTest();
+        
+        $course = $this->getDataGenerator()->create_course();
+        $courseid = $course->id;
+        $context = context_course::instance($course->id);
+        
+        $user = $this->getDataGenerator()->create_user();
+        $studentroleid = $DB->get_field('role', 'id', array('shortname' => 'student'));
+        $this->getDataGenerator()->enrol_user($user->id, $courseid, $studentroleid, 'meta');
+        
+        $groupname = 'Metagroup name';
+        
+        create_metagroup($courseid, $groupname, $context);
+        $groupid = $DB->get_field('metagroup', 'groupid', array('courseid' => $courseid));
+        
+        $members = groups_get_members($groupid);
+        if ($members) {
+            $this->assertFalse(in_array($user, $members));
+        }
     }
 }
