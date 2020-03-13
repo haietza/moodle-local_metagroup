@@ -43,10 +43,10 @@ class metagroup_form extends moodleform {
         global $CFG, $DB, $COURSE;
 
         $mform = $this->_form;
+        $metagroupid = $DB->get_field('metagroup', 'groupid', array('courseid' => $COURSE->id));
 
         $mform->addElement('checkbox', 'enablemetagroup', get_string('enable', 'local_metagroup'));
-        $enabled = $DB->get_record('metagroup', array('courseid' => $COURSE->id));
-        if ($enabled) {
+        if ($metagroupid) {
             $mform->setDefault('enablemetagroup', 1);
         }
         $mform->addHelpButton('enablemetagroup', 'enable', 'local_metagroup');
@@ -54,7 +54,6 @@ class metagroup_form extends moodleform {
         $mform->addElement('text', 'groupname', get_string('groupname', 'local_metagroup'));
         $mform->setType('groupname', PARAM_TEXT);
         $mform->addRule('groupname', get_string('required'), 'required');
-        $metagroupid = $DB->get_field('metagroup', 'groupid', array('courseid' => $COURSE->id));
         if ($metagroupid) {
             $groupname = $DB->get_field('groups', 'name', array('id' => $metagroupid));
         } else {
@@ -81,12 +80,13 @@ class metagroup_form extends moodleform {
      *         or an empty array if everything is OK (true allowed for backwards compatibility too).
      */
     public function validation($data, $files) {
-        global $COURSE;
+        //global $COURSE;
 
         $errors = array();
 
         if (isset($data['enablemetagroup']) && $data['enablemetagroup']) {
-            $groups = groups_get_all_groups($COURSE->id);
+            //$groups = groups_get_all_groups($COURSE->id);
+            $groups = groups_get_all_groups($data['courseid']);
             foreach ($groups as $group) {
                 if ($group->name == $data['groupname']) {
                     $errors['groupname'] = get_string('groupnameexists', 'group', $data['groupname']);
