@@ -125,4 +125,30 @@ class local_metagroup_locallib_testcase extends advanced_testcase {
             $this->assertFalse(in_array($user, $members));
         }
     }
+    
+    /**
+     * Test metagroup created, non-meta enrolments not added.
+     */
+    public function test_metagroup_create_non_meta_enrolments() {
+        global $DB;
+        $this->resetAfterTest();
+        
+        $course = $this->getDataGenerator()->create_course();
+        $courseid = $course->id;
+        $context = context_course::instance($course->id);
+        
+        $user = $this->getDataGenerator()->create_user();
+        $studentroleid = $DB->get_field('role', 'id', array('shortname' => 'student'));
+        $this->getDataGenerator()->enrol_user($user->id, $courseid, $studentroleid, 'manual');
+        
+        $groupname = 'Metagroup name';
+        
+        create_metagroup($courseid, $groupname, $context);
+        $groupid = $DB->get_field('metagroup', 'groupid', array('courseid' => $courseid));
+        
+        $members = groups_get_members($groupid);
+        if ($members) {
+            $this->assertTrue(in_array($user, $members));
+        }
+    }
 }
