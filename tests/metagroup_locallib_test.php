@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
-require_once($CFG->dirroot . '/local/metagroup/classes/forms/edit_form.php');
+require_once($CFG->dirroot . '/local/metagroup/locallib.php');
 
 /**
  * Unit tests for {@link local_metagroup}.
@@ -33,12 +33,21 @@ require_once($CFG->dirroot . '/local/metagroup/classes/forms/edit_form.php');
  */
 class local_metagroup_locallib_testcase extends advanced_testcase {
     /**
-     * Test metagroup form group name exists.
+     * Test metagroup DB record added.
      */
-    public function test_metagroup_form_group_name_exists() {
+    public function test_metagroup_create_metagroup_metagroup() {
         global $DB;
         $this->resetAfterTest();
         
+        $course = $this->getDataGenerator()->create_course();
+        $courseid = $course->id;
+        $context = context_course::instance($course->id);
+        $groupname = 'Metagroup name';
         
+        create_metagroup($courseid, $groupname, $context);
+        
+        $metagroupexists = $DB->record_exists('metagroup', array('courseid' => $courseid));
+        
+        $this->assertTrue($metagroupexists);
     }
 }
