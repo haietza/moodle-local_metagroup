@@ -80,12 +80,9 @@ class metagroup_form extends moodleform {
      *         or an empty array if everything is OK (true allowed for backwards compatibility too).
      */
     public function validation($data, $files) {
-        //global $COURSE;
-
         $errors = array();
 
         if (isset($data['enablemetagroup']) && $data['enablemetagroup']) {
-            //$groups = groups_get_all_groups($COURSE->id);
             $groups = groups_get_all_groups($data['courseid']);
             foreach ($groups as $group) {
                 if ($group->name == $data['groupname']) {
