@@ -29,6 +29,8 @@ require_once($CFG->dirroot . '/local/metagroup/classes/forms/edit_form.php');
 /**
  * Unit tests for {@link local_metagroup}.
  * @group local_metagroup
+ * @copyright 2020, Michelle Melton <meltonml@appstate.edu>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  */
 class local_metagroup_form_testcase extends advanced_testcase {
@@ -38,7 +40,7 @@ class local_metagroup_form_testcase extends advanced_testcase {
     public function test_metagroup_form_group_name_exists() {
         global $DB;
         $this->resetAfterTest();
-        
+
         $course = $this->getDataGenerator()->create_course();
         $courseid = $course->id;
         $groupname = 'Metagroup name';
@@ -49,7 +51,7 @@ class local_metagroup_form_testcase extends advanced_testcase {
                 'groupname' => $groupname
         );
         metagroup_form::mock_submit($submitteddata);
-        
+
         $form = new metagroup_form();
         $toform = new stdClass();
         $toform->courseid = $courseid;
