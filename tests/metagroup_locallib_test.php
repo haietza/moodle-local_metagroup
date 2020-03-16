@@ -151,4 +151,35 @@ class local_metagroup_locallib_testcase extends advanced_testcase {
             $this->assertTrue(in_array($user, $members));
         }
     }
+    
+    /**
+     * Test metagroup deleted.
+     */
+    public function test_metagroup_delete() {
+        global $DB;
+        $this->resetAfterTest();
+        
+        $course = $this->getDataGenerator()->create_course();
+        $courseid = $course->id;
+        $context = context_course::instance($course->id);
+        $groupname = 'Metagroup name';
+        
+        $group = new stdClass();
+        $group->courseid = $courseid;
+        $group->name = $groupname;
+        $groupid = groups_create_group($group);
+        
+        $metagroup = new stdClass();
+        $metagroup->courseid = $courseid;
+        $metagroup->groupid = $groupid;
+        $DB->insert_record('metagroup', $metagroup);
+        
+        delete_metagroup($courseid);
+        
+        $metagroup = $DB->get_field('metagroup', 'id', array('courseid' => $courseid));
+        $group = $DB->get_field('groups', 'id', array('courseid' => $courseid, 'name' => $groupname));
+        
+        $this->assertFalse($metagroup);
+        $this->assertFalse($group);
+    }
 }
