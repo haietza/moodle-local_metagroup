@@ -111,9 +111,12 @@ class local_metagroup_locallib_testcase extends advanced_testcase {
         $courseid = $course->id;
         $context = context_course::instance($course->id);
         
-        $user = $this->getDataGenerator()->create_user();
+        $user1 = $this->getDataGenerator()->create_user();
         $studentroleid = $DB->get_field('role', 'id', array('shortname' => 'student'));
-        $this->getDataGenerator()->enrol_user($user->id, $courseid, $studentroleid, 'meta');
+        $this->getDataGenerator()->enrol_user($user1->id, $courseid, $studentroleid, 'meta');
+        
+        $user2 = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($user2->id, $courseid, $studentroleid, 'manual');
         
         $groupname = 'Metagroup name';
         
@@ -122,7 +125,7 @@ class local_metagroup_locallib_testcase extends advanced_testcase {
         
         $members = groups_get_members($groupid);
         if ($members) {
-            $this->assertFalse(in_array($user, $members));
+            $this->assertFalse(in_array($user1, $members));
         }
     }
     
