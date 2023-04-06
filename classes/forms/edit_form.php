@@ -57,7 +57,7 @@ class metagroup_form extends moodleform {
         if ($metagroupid) {
             $groupname = $DB->get_field('groups', 'name', array('id' => $metagroupid));
         } else {
-            $groupname = $COURSE->shortname . ' course';
+            $groupname = $COURSE->fullname . ' course';
         }
         $mform->setDefault('groupname', $groupname);
         $mform->addHelpButton('groupname', 'groupname', 'local_metagroup');
