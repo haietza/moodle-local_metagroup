@@ -41,11 +41,14 @@ class local_metagroup_observer {
      */
     public static function manage_events($event) {
         global $DB;
-        switch ($event->eventname) {
-            case '\core\event\group_deleted':
-                $DB->delete_records('metagroup', array('groupid' => $event->objectid));
-            case '\core\event\user_enrolment_created':
+        $data = $event->get_data();
+        switch ($data['eventname']) {
+            case '\\core\\event\\group_deleted':
+                $DB->delete_records('metagroup', array('groupid' => $data['objectid']));
+                break;
+            case '\\core\\event\\user_enrolment_created':
                 process_course_enrol($event);
+                break;
         }
     }
 }

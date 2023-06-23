@@ -34,7 +34,7 @@ function local_metagroup_extend_settings_navigation($settingsnav, $context) {
     global $CFG, $PAGE;
 
     // Only add this settings item on non-site course pages.
-    if (!$PAGE->course or $PAGE->course->id == 1) {
+    if (!$PAGE->course || $PAGE->course->id == 1) {
         return;
     }
 
